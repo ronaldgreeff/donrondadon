@@ -35,16 +35,15 @@
     </div>
 
     <script type="text/javascript">
-      let conversation = {
-        history: [],
-        getSelf: (x) => { console.log(x) },
+
+      const script = {
         0: {
           t: 'hi',
           o: {
             0: ('hi', 1),
             1: ('hi!', 1),
             2: ('hi?', 1),
-          },
+          }
         },
         1: {
           t: 'so what can i do for you?',
@@ -52,9 +51,20 @@
             0: ('cv', 2),
             1: ('about', 3),
           }
-        }
+        },
       }
-      conversation.getSelf(12)
+
+      class Handler {
+        constructor(script) {
+          this.history = [];
+          this.script = script;
+        }
+        getResponse(i) { return this.script[i] }
+        historyForward(i) { this.history.push(i) }
+        historyBack() { this.history.pop(i) }
+      }
+
+
     </script>
   </body>
 </html>
