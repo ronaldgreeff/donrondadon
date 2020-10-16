@@ -1,21 +1,60 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title></title>
-</head>
-<style type="text/css">
+  </head>
+  <style type="text/css">
     div {
-        width: 100px;
         height: 100px;
-        background: red;
-        transition: width 2s;
+        width: 100px;
+        position: absolute;
+        font-size: 40px;
+        color: black
     }
-    div:hover {
-        width: 300px;
+
+    .new {
+        opacity: 0;
     }
-</style>
-<body>
-    <div>
+
+    .old, .new {
+        transition: opacity 0.5s linear;
+    }
+
+    .wrap:hover .old {
+        opacity: 0;
+    }
+    .wrap:hover .new {
+        opacity: 1;
+    }
+
+  </style>
+  <body>
+    <div class="wrap">
+      <div class="new">New</div>
+      <div class="old">Old</div>
     </div>
-</body>
+
+    <script type="text/javascript">
+      let conversation = {
+        history: [],
+        getSelf: (x) => { console.log(x) },
+        0: {
+          t: 'hi',
+          o: {
+            0: ('hi', 1),
+            1: ('hi!', 1),
+            2: ('hi?', 1),
+          },
+        },
+        1: {
+          t: 'so what can i do for you?',
+          o: {
+            0: ('cv', 2),
+            1: ('about', 3),
+          }
+        }
+      }
+      conversation.getSelf(12)
+    </script>
+  </body>
 </html>
