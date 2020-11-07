@@ -44,7 +44,9 @@
 
       class contentHandler {
         constructor() {
-
+          this.history = [];
+          this.historyForward = (i) => { this.history.push(i) }
+          this.historyBack = () => { return this.history.pop() }
           this.script = {
             0: {
               t: 'hi',
@@ -70,36 +72,30 @@
               o: [null, null],
             }
           }
-
           this.updateFrame = (i) => {
-
             let item = this.script[i]
-
             let fragment = new DocumentFragment();
             for (var o in item.o) {
               let text = item.o[o][0]
               let _id = item.o[o][1]
               var button = document.createElement('button');
               button.textContent = text
-              button.addEventListener('click', handleClick)
+              button.addEventListener
+              button.addEventListener('click', () => this.handleClick(_id))
               fragment.appendChild(button);
             }
-
             document.getElementById('central-text').innerText = item.t;
-            document.getElementById('button-wrapper').appendChild(fragment);
+            let bw = document.getElementById('button-wrapper');
+            while (bw.hasChildNodes()) {
+              bw.removeChild(bw.lastChild);
+            }
+            bw.appendChild(fragment);
           }
-
-          this.history = [];
-          this.historyForward = (i) => { this.history.push(i) }
-          this.historyBack = () => { return this.history.pop() }
-
+          this.handleClick = (_id) => {
+            this.updateFrame(_id)
+          }
           this.updateFrame(0)
-
         }
-      }
-
-      const handleClick = (_id) => {
-        console.log(_id)
       }
 
       const docReady = (fn) => {
