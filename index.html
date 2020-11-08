@@ -14,30 +14,48 @@
     .text {
       font-size: 40px;
       color: black;
-      transition: opacity 0.5s linear;
+      /* transition: opacity 0.5s linear; */
     }
-    .buttons {}
+    .fade-in {
+      animation: fadeIn ease 5s;
+      -webkit-animation: fadeIn ease 5s;
+      -moz-animation: fadeIn ease 5s;
+      -o-animation: fadeIn ease 5s;
+      -ms-animation: fadeIn ease 5s;
+      }
+      @keyframes fadeIn {
+      0% {opacity:0;}
+      100% {opacity:1;}
+      }
 
-    /*.new {
-        opacity: 0;
-    }
+      @-moz-keyframes fadeIn {
+      0% {opacity:0;}
+      100% {opacity:1;}
+      }
 
-    .old, .new {
-        transition: opacity 0.5s linear;
-    }
+      @-webkit-keyframes fadeIn {
+      0% {opacity:0;}
+      100% {opacity:1;}
+      }
 
-    .wrap:hover .old {
-        opacity: 0;
-    }
-    .wrap:hover .new {
-        opacity: 1;
-    }*/
+      @-o-keyframes fadeIn {
+      0% {opacity:0;}
+      100% {opacity:1;}
+      }
+
+      @-ms-keyframes fadeIn {
+      0% {opacity:0;}
+      100% {opacity:1;}
+      }
 
   </style>
   <body>
-    <div class="wrapper">
-      <div id="central-text" class="text"></div>
-      <div id="button-wrapper" class="buttons"></div>
+    <div id="content-wrapper" class="wrapper">
+      <div id="text-container" class="container">
+        <div id="old-text" class="text fade-out"></div>
+        <div id="new-text" class="text fade-in"></div>
+        <div id="button-container" class=""></div>
+      </div>
     </div>
 
     <script type="text/javascript">
@@ -45,22 +63,22 @@
       class contentHandler {
         constructor() {
           this.history = [];
-          this.historyForward = (i) => { this.history.push(i) }
+          this.historyForw = (i) => { this.history.push(i) }
           this.historyBack = () => { return this.history.pop() }
           this.script = {
             0: {
-              t: 'hi',
+              t: 'Hi',
               o: {
-                0: ['hi', 1],
-                1: ['hi!', 1],
-                2: ['hi?', 1],
+                0: ['Hi', 1],
+                1: ['Hi!', 1],
+                2: ['Hi?', 1],
               }
             },
             1: {
-              t: "so what can i do for you?",
+              t: "What can I do for you?",
               o: {
-                0: ['cv', 2],
-                1: ['about', 3],
+                0: ['Where am I?', 2],
+                1: ['Who are you?', 3],
               }
             },
             2: {
@@ -72,29 +90,44 @@
               o: [null, null],
             }
           }
+          // record history and update frame text & buttons
           this.updateFrame = (i) => {
-            let item = this.script[i]
-            let fragment = new DocumentFragment();
-            for (var o in item.o) {
-              let text = item.o[o][0]
-              let _id = item.o[o][1]
-              var button = document.createElement('button');
+
+            this.historyForw(i)
+
+            let segment = this.script[i]
+            let content_wrapper_fragment = new DocumentFragment()
+
+            // create the text
+            // document.getElementById('central-text').innerText = segment.t;
+            let text_fragment = new DocumentFragment()
+            text_fragment.innerText = segment.t
+
+            content_wrapper_fragment.appendChild(text_fragment)
+
+            // create the text's associated buttons
+            let buttons_fragment = new DocumentFragment()
+            for (var o in segment.o) {
+              let text = segment.o[o][0]
+              let _id = segment.o[o][1]
+              let button = document.createElement('button')
+
               button.textContent = text
-              button.addEventListener
               button.addEventListener('click', () => this.handleClick(_id))
-              fragment.appendChild(button);
+              buttons_fragment.appendChild(button)
             }
-            document.getElementById('central-text').innerText = item.t;
-            let bw = document.getElementById('button-wrapper');
-            while (bw.hasChildNodes()) {
-              bw.removeChild(bw.lastChild);
-            }
-            bw.appendChild(fragment);
+
+            content_wrapper_fragment.appendChild(buttons_fragment)
+
+            let element = document.getElementById('text-container')
+            element.parentNode.replaceChild(content_wrapper_fragment, element)
           }
+          // recursively handle clicks
           this.handleClick = (_id) => {
-            this.updateFrame(_id)
+            this.updateFrame(_id);
           }
-          this.updateFrame(0)
+          // initialize
+          this.updateFrame(0);
         }
       }
 
@@ -104,7 +137,7 @@
 
       docReady(function() {
         new contentHandler()
-      })
+      });
 
     </script>
   </body>
