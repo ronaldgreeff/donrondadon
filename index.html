@@ -10,11 +10,11 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      text-align: center;
     }
     .text {
       font-size: 40px;
       color: black;
-      /* transition: opacity 0.5s linear; */
     }
     .fade-in {
       animation: fadeIn ease 5s;
@@ -48,13 +48,56 @@
       100% {opacity:1;}
       }
 
+    .fade-out {
+
+      animation: fadeOut ease 5s;
+      -webkit-animation: fadeOut ease 5s;
+      -moz-animation: fadeOut ease 5s;
+      -o-animation: fadeOut ease 5s;
+      -ms-animation: fadeOut ease 5s;
+      animation-fill-mode: forwards;
+      -webkit-animation-fill-mode: forwards;
+      -moz-animation-fill-mode: forwards;
+      -o-animation-fill-mode: forwards;
+      -ms-animation-fill-mode: forwards;
+      }
+      @keyframes fadeOut {
+      0% {opacity:1;}
+      100% {opacity:0;}
+      }
+
+      @-moz-keyframes fadeOut {
+      0% {opacity:1;}
+      100% {opacity:0;}
+      }
+
+      @-webkit-keyframes fadeOut {
+      0% {opacity:1;}
+      100% {opacity:0;}
+      }
+
+      @-o-keyframes fadeOut {
+      0% {opacity:1;}
+      100% {opacity:0;}
+      }
+
+      @-ms-keyframes fadeOut {
+      0% {opacity:1;}
+      100% {opacity:0;}
+      }
+
   </style>
   <body>
     <div id="content-wrapper" class="wrapper">
-      <div id="text-container" class="container">
-        <div id="old-text" class="text fade-out"></div>
-        <div id="new-text" class="text fade-in"></div>
-        <div id="button-container" class=""></div>
+      <div id="textual-content-wrapper">
+        <div id="texts">
+          <p id="new-text" class="text fade-in"></p>
+        </div>
+        <div id="buttons">
+          <!-- <button>Hi</button>
+            <button>Hi!</button>
+            <button>Hi?</button> -->
+        </div>
       </div>
     </div>
 
@@ -77,8 +120,8 @@
             1: {
               t: "What can I do for you?",
               o: {
-                0: ['Where am I?', 2],
-                1: ['Who are you?', 3],
+                0: ['Where am I?', 0],
+                1: ['Who are you?', 0],
               }
             },
             2: {
@@ -90,42 +133,82 @@
               o: [null, null],
             }
           }
+
+          this.create_text_element = (text) => {
+
+            let p_new_text = document.createElement('p');
+
+            p_new_text.id = "new-text";
+            p_new_text.className = "text fade-in";
+            p_new_text.textContent = text;
+
+            let text_fragment = new DocumentFragment();
+            text_fragment.appendChild(p_new_text);
+
+            return text_fragment;
+          }
+
+          this.create_buttons_element = (buttons) => {
+
+            let button_container = document.createElement('div');
+            button_container.id = "buttons";
+
+            for (var button in buttons) {
+
+              let button_elem = document.createElement('button');
+
+              let text = buttons[button][0];
+              let segment_id = buttons[button][1];
+
+              button_elem.textContent = text;
+              button_elem.addEventListener('click', () => this.handleClick(segment_id));
+
+              button_container.appendChild(button_elem);
+            }
+
+            let button_container_fragment = new DocumentFragment();
+            button_container_fragment.appendChild(button_container)
+
+            return button_container_fragment;
+          }
+
           // record history and update frame text & buttons
           this.updateFrame = (i) => {
 
-            this.historyForw(i)
+            this.historyForw(i);
 
-            let segment = this.script[i]
-            let content_wrapper_fragment = new DocumentFragment()
+            let segment = this.script[i];
+            let new_text = this.create_text_element(segment.t);
+            let new_buttons = this.create_buttons_element(segment.o);
 
-            // create the text
-            // document.getElementById('central-text').innerText = segment.t;
-            let text_fragment = new DocumentFragment()
-            text_fragment.innerText = segment.t
-
-            content_wrapper_fragment.appendChild(text_fragment)
-
-            // create the text's associated buttons
-            let buttons_fragment = new DocumentFragment()
-            for (var o in segment.o) {
-              let text = segment.o[o][0]
-              let _id = segment.o[o][1]
-              let button = document.createElement('button')
-
-              button.textContent = text
-              button.addEventListener('click', () => this.handleClick(_id))
-              buttons_fragment.appendChild(button)
+            // fade out old-text
+            let old_text = document.getElementById("old-text");
+            if (old_text) {
+              old_text.remove();
             }
 
-            content_wrapper_fragment.appendChild(buttons_fragment)
+            // remove the current text element
+            let current_text = document.getElementById("new-text");
+            current_text.id = "old-text";
+            current_text.classList.remove("fade-in");
+            current_text.classList.add("fade-out");
 
-            let element = document.getElementById('text-container')
-            element.parentNode.replaceChild(content_wrapper_fragment, element)
+            // add the new text element
+            let texts = document.getElementById("texts");
+            texts.appendChild(new_text);
+
+            // replace the entire buttons container
+            let textual_content_container = document.getElementById("textual-content-wrapper");
+            let old_buttons = document.getElementById("buttons");
+            textual_content_container.replaceChild(new_buttons, old_buttons);
+
           }
+
           // recursively handle clicks
           this.handleClick = (_id) => {
             this.updateFrame(_id);
           }
+
           // initialize
           this.updateFrame(0);
         }
